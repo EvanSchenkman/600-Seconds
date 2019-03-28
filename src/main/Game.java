@@ -16,8 +16,8 @@ import graphics.Screen;
 public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
 
-	public static int width = Toolkit.getDefaultToolkit().getScreenSize().width;
-	public static int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+	public static int width = 400;
+	public static int height = 268;
 	public static int scale = 3;
 
 	private Thread thread;
@@ -30,7 +30,7 @@ public class Game extends Canvas implements Runnable {
 	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
 	public Game() {
-		Dimension size = new Dimension(width, height);
+		Dimension size = new Dimension(width * scale, height * scale);
 		setPreferredSize(size);
 
 		frame = new JFrame();
@@ -53,10 +53,19 @@ public class Game extends Canvas implements Runnable {
 	}
 
 	public void run() {
+		long lastTime = System.nanoTime();
+		final double ns = 1000000000.0 / 60.0;
+		double delta = 0;
 		while (running) {
-			update();
+			long now = System.nanoTime();
+			delta += (now - lastTime) / ns;
+			while (delta >= 1) {
+				update();
+				delta--;
+			}
 			render();
 		}
+		stop();
 	}
 
 	private void update() {
@@ -69,10 +78,11 @@ public class Game extends Canvas implements Runnable {
 			createBufferStrategy(3);
 			return;
 		}
-		
+
+		screen.clear();
 		screen.render();
-		
-		for (int i = 0; i < pixels.length; i++) { 
+
+		for (int i = 0; i < pixels.length; i++) {
 			pixels[i] = screen.pixels[i];
 		}
 
