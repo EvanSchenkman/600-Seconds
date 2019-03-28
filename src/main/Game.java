@@ -59,6 +59,7 @@ public class Game extends Canvas implements Runnable {
 		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
+			lastTime = now;
 			while (delta >= 1) {
 				update();
 				delta--;
