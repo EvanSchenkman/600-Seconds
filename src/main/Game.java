@@ -29,6 +29,9 @@ public class Game extends Canvas implements Runnable {
 	private BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 
+	private int frames;
+	private String framesString = Integer.toString(frames);
+
 	public Game() {
 		Dimension size = new Dimension(width * scale, height * scale);
 		setPreferredSize(size);
@@ -54,8 +57,10 @@ public class Game extends Canvas implements Runnable {
 
 	public void run() {
 		long lastTime = System.nanoTime();
+		long timer = System.currentTimeMillis();
 		final double ns = 1000000000.0 / 60.0;
 		double delta = 0;
+		frames = 0;
 		while (running) {
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
@@ -65,6 +70,12 @@ public class Game extends Canvas implements Runnable {
 				delta--;
 			}
 			render();
+			frames++;
+
+			if (System.currentTimeMillis() - timer > 1000) {
+				timer += 1000;
+				frames = 0;
+			}
 		}
 		stop();
 	}
@@ -88,6 +99,7 @@ public class Game extends Canvas implements Runnable {
 		}
 
 		Graphics g = bs.getDrawGraphics();
+		String framesString = String.valueOf(frames);
 		g.setColor(Color.black);
 		g.fillRect(0, 0, width, height);
 		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
